@@ -16,9 +16,9 @@ const getCostStatement = async (req, res) => {
     res.status(200).json(statement);
 }
 
-const getCostByMonth = (req, res) => {
+const getCostByMonth = async (req, res) => {
     const month = req.params.month;
-    const getCostByMonth = queryCostByMonth(month);
+    const getCostByMonth = await queryCostByMonth(month);
 
     if (getCostByMonth.errors) {
         return res.status(500).json(getCostByMonth._message);
@@ -50,15 +50,15 @@ const updateCost = async (req, res) => {
     res.json(updateCost);
 }
 
-const deleteCost = (req, res) => {
+const deleteCost = async (req, res) => {
     const costId = req.params.cid;
-    const deleteCost = queryDeleteCost(costId);
+    const deleteCost = await queryDeleteCost(costId);
 
     if (deleteCost.errors) {
         return res.status(500).json(deleteCost._message);
     }
-    
-    res.json({ message: 'Cost deleted.' });
+
+    res.json({ message: 'Cost deleted' });
 }
 
 exports.getCostStatement = getCostStatement;

@@ -8,8 +8,8 @@ const queryCostStatement = async () => {
             {
                 $group : {
                     _id : {
-                        year: { $year: '$createdAt' },
-                        month: { $month: '$createdAt' }
+                        month: { $month: '$createdAt' },
+                        year: { $year: '$createdAt' }
                     },
                     sumGross: { $sum: '$grossCost' },
                     sumNet: { $sum: '$netCost' },
@@ -27,12 +27,19 @@ const queryCostStatement = async () => {
 }
 
 const queryCostByMonth = async (month) => {
-    const costMonth = month;
     let cost;
 
     try {
         cost = await CostModel.aggregate([
-            { $eq: [ {$month: '$createdAt'}, costMonth] }
+            {
+                $project: {
+                    name: '$name',
+                    month: { $month: '$createdAt' },
+                    netCost: '$netCost',
+                    grossCost: '$grossCost'
+                }
+            },
+            { $match: { month: Number(month) } }
         ]);
     } catch(error) {
         return error;
@@ -59,11 +66,10 @@ const queryCreateCost = async (body) => {
 
 const queryUpdateCost = async (body, id) => {
     const { name, netCost, grossCost } = body;
-    const costId = id;
     let cost;
 
     try {
-        cost = await CostModel.findById(costId);
+        cost = await CostModel.findById(id);
         cost.name = name;
         cost.netCost = netCost;
         cost.grossCost = grossCost;
@@ -76,15 +82,13 @@ const queryUpdateCost = async (body, id) => {
 }
 
 const queryDeleteCost = async (id) => {
-    let cost;
-
     try {
-        cost = await CostModel.findByIdAndDelete(id);
+        await CostModel.findByIdAndDelete(id);
     } catch(error) {
         return error;
     }
 
-    return cost;
+    return;
 }
 
 exports.queryCostStatement = queryCostStatement;
