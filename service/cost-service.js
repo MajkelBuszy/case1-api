@@ -39,7 +39,8 @@ const queryCostByMonth = async (month) => {
                     grossCost: '$grossCost'
                 }
             },
-            { $match: { month: Number(month) } }
+            { $match: { month: Number(month) } },
+            { $sort : { 'grossCost': -1 } }
         ]);
     } catch(error) {
         return error;
